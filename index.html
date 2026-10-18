@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>إنذار الجزيرة المبكر</title>
+<meta name="description" content="لوحة نموذج أولي للإنذار المبكر عن الملاريا وحمى الضنك والإسهالات المائية الحادة في ولاية الجزيرة، ببيانات محاكاة.">
+<meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="إنذار الجزيرة المبكر · Al Jazirah Early Warning">
+<meta property="og:description" content="لوحة نموذج أولي للإنذار المبكر عن الملاريا وحمى الضنك والإسهالات المائية الحادة في ولاية الجزيرة، ببيانات محاكاة.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2032%2032%27%3E%3Crect%20width=%2732%27%20height=%2732%27%20rx=%277%27%20fill=%27%230b0b0b%27/%3E%3Crect%20x=%276%27%20y=%2716%27%20width=%275%27%20height=%2710%27%20rx=%271%27%20fill=%27%233987e5%27/%3E%3Crect%20x=%2713.5%27%20y=%279%27%20width=%275%27%20height=%2717%27%20rx=%271%27%20fill=%27%23d95926%27/%3E%3Crect%20x=%2721%27%20y=%2713%27%20width=%275%27%20height=%2713%27%20rx=%271%27%20fill=%27%23199e70%27/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+/* base reset (same as the hosting skeleton used while designing) */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: field-epidemiology desk. Situation summary first, then disease strip, then a chart
+   + priorities grid (two columns from tablet landscape up, one column below).
+   Selection is ink, data is colour. Bilingual via logical CSS properties. */
+:root{
+  --bg:#f6f6f3; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#706e68;
+  --grid:#e8e7e1; --axis:#c3c2b7; --line:rgba(11,11,11,.10); --chip:#efeee9;
+  --c-mal:#2a78d6; --c-den:#eb6834; --c-awd:#1baf7a;
+  --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+  --hm-lo:#e3eefc; --hm-hi:#184f95; --hm-t-lo:#0b0b0b; --hm-t-hi:#ffffff;
+  --sim-bg:#fff4d6; --sim-ink:#5c4300; --sim-line:#e2bb55;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic","Segoe UI",system-ui,-apple-system,Tahoma,sans-serif;
+  --f-body:"IBM Plex Sans Arabic","Segoe UI",system-ui,-apple-system,Tahoma,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d0d0d; --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --muted:#9a988f;
+    --grid:#2c2c2a; --axis:#383835; --line:rgba(255,255,255,.10); --chip:#262624;
+    --c-mal:#3987e5; --c-den:#d95926; --c-awd:#199e70;
+    --hm-lo:#1d2836; --hm-hi:#6da7ec; --hm-t-lo:#f0efec; --hm-t-hi:#0b0b0b;
+    --sim-bg:#34290b; --sim-ink:#f3d98a; --sim-line:#6b5a1f; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d0d0d; --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --muted:#9a988f;
+  --grid:#2c2c2a; --axis:#383835; --line:rgba(255,255,255,.10); --chip:#262624;
+  --c-mal:#3987e5; --c-den:#d95926; --c-awd:#199e70;
+  --hm-lo:#1d2836; --hm-hi:#6da7ec; --hm-t-lo:#f0efec; --hm-t-hi:#0b0b0b;
+  --sim-bg:#34290b; --sim-ink:#f3d98a; --sim-line:#6b5a1f; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.6}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.top h1{font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1.25;margin:0;text-wrap:balance}
+.top p{margin:4px 0 0;color:var(--ink2);font-size:13.5px;max-width:62ch}
+.meta{display:flex;flex-direction:column;gap:6px;min-width:0}
+#langseg{align-self:flex-start}
+.ruler{display:flex;gap:2px;align-items:flex-end;height:26px;direction:ltr;width:min(100%,360px)}
+.tk{flex:1;min-width:2px;height:8px;background:var(--grid);border-radius:1px}
+.tk.past{background:var(--axis);height:12px}
+.tk.now{background:var(--ink);height:26px}
+.tk.fc{background:repeating-linear-gradient(135deg,var(--ink2) 0 2px,transparent 2px 4px);height:16px}
+.rl{font-size:12px;color:var(--ink2);max-width:360px}
+.sim{display:flex;gap:10px;align-items:flex-start;background:var(--sim-bg);color:var(--sim-ink);border:1px solid var(--sim-line);border-radius:8px;padding:10px 12px;font-size:13px}
+.sim b{font-weight:600}
+.sim svg{flex:none;margin-top:3px}
+
+/* tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg)}
+.tab{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;cursor:pointer;color:var(--ink2);font-weight:500;white-space:nowrap;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.tab:hover{color:var(--ink)}
+.panel{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.card h2{font-family:var(--f-display);font-weight:600;font-size:16px;margin:0;text-wrap:balance}
+.card .sub{margin:2px 0 0;color:var(--ink2);font-size:12.5px}
+.chead{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:16px}
+
+/* situation summary */
+.sumcard{display:flex;flex-direction:column;gap:12px}
+.sumtxt{margin:0;font-size:15px;line-height:1.8;max-width:92ch;text-wrap:pretty}
+.asof{margin:2px 0 0;font-size:12px;color:var(--muted)}
+.lvlrow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:12.5px;color:var(--ink2)}
+.lvlrow .it{display:inline-flex;align-items:center;gap:6px}
+
+/* disease strip */
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}
+.dcard{container:dc/inline-size;display:block;width:100%;text-align:start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;min-width:0}
+.dcard[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.dcard:hover{border-color:var(--axis)}
+.dinner{display:grid;grid-template-columns:minmax(0,1fr);gap:8px 10px;align-items:center}
+@container dc (min-width:330px){.dinner{grid-template-columns:minmax(0,1fr) auto}}
+.dn{display:flex;align-items:flex-start;gap:8px;font-family:var(--f-display);font-weight:600;font-size:15px;line-height:1.3}
+.dn .dot{margin-top:.42em}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.den{font-size:11.5px;color:var(--muted);font-family:var(--f-body);font-weight:400}
+.dcap{font-size:12.5px;color:var(--ink2)}
+.dstack{display:flex;flex-direction:column;gap:6px;min-width:0}
+.dlv{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 10px 2px 9px;border-radius:999px;background:var(--chip);font-size:12.5px;font-weight:500;white-space:nowrap;width:fit-content}
+.ic{flex:none}
+.chg{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink2);white-space:nowrap}
+.chg svg{color:var(--muted)}
+.chg.up svg{color:var(--crit)}
+.chg.down svg{color:var(--good)}
+
+/* controls */
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg)}
+.seg button{background:none;border:0;padding:5px 12px;cursor:pointer;font-size:13px;color:var(--ink2)}
+.seg button+button{border-inline-start:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:500}
+select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:13px;max-width:100%}
+
+/* overview grid: one column by default, chart + priorities side by side from tablet landscape */
+.ovgrid{display:grid;gap:16px;grid-template-columns:minmax(0,1fr);grid-template-areas:"prio" "chart" "heat" "defs";align-items:start}
+.ov-prio{grid-area:prio}.ov-chart{grid-area:chart}.ov-heat{grid-area:heat}.ov-defs{grid-area:defs;min-width:0}
+@media (min-width:980px){
+  .ovgrid{grid-template-columns:minmax(0,1fr) 320px;grid-template-areas:"chart prio" "heat prio" "defs defs"}
+}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 16px;margin-bottom:12px}
+.stat .k{display:block;font-size:12px;color:var(--ink2)}
+.stat .v{display:flex;align-items:center;gap:6px;font-family:var(--f-display);font-weight:600;font-size:19px;line-height:1.5;min-height:30px}
+.stat .n{display:block;font-size:11.5px;color:var(--muted)}
+
+/* chart */
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink2);margin-bottom:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:18px;height:0;border-top:2px solid}
+.sw.d{border-top-style:dashed}
+.sw.dd{border-top-style:dotted}
+.bands{display:inline-flex}
+.bands i{display:block;width:8px;height:10px}
+.chn{display:block;width:18px;height:10px;background:var(--axis);opacity:.5;border-radius:2px}
+.chart{position:relative;direction:ltr;min-height:240px}
+.chart svg{display:block;width:100%;touch-action:pan-y}
+.g-grid{stroke:var(--grid);stroke-width:1}
+.g-axis{stroke:var(--axis);stroke-width:1}
+.g-tick{fill:var(--muted);font-size:11px;font-family:var(--f-body)}
+.g-note{fill:var(--ink2);font-size:11px;font-family:var(--f-body)}
+.tip{position:absolute;top:6px;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.55;min-width:160px;max-width:250px;z-index:2}
+#app[dir="rtl"] .tip{direction:rtl;text-align:right}
+#app[dir="ltr"] .tip{direction:ltr;text-align:left}
+.tip b{font-weight:600}
+.tip .row{display:flex;justify-content:space-between;gap:12px}
+.tip[hidden]{display:none}
+
+/* heat table */
+.hwrap{overflow-x:auto;padding-bottom:4px}
+.ht{display:grid;grid-template-columns:minmax(140px,1.7fr) repeat(8,minmax(34px,1fr));gap:4px;min-width:460px;align-items:stretch}
+.ht .hh{font-size:11.5px;color:var(--muted);text-align:center;direction:ltr;align-self:end;padding-bottom:2px}
+.ht .hh.first{text-align:start;direction:inherit}
+.nm{position:sticky;inset-inline-start:0;z-index:1;background:var(--surface);border:0;border-radius:8px;text-align:start;padding:4px 8px;cursor:pointer;display:flex;flex-direction:column;gap:0;line-height:1.35}
+.nm[aria-pressed="true"]{background:var(--chip);box-shadow:inset 0 0 0 1px var(--axis)}
+.nm .a{font-weight:500;font-size:13px}
+.nm .b{display:flex;gap:5px;align-items:center;font-size:11.5px;color:var(--ink2)}
+.cell{display:flex;align-items:center;justify-content:center;border-radius:4px;min-height:38px;font-size:12px;background:color-mix(in oklab,var(--hm-hi) calc(var(--p) * 100%),var(--hm-lo));color:var(--hm-t-lo)}
+.cell.hi{color:var(--hm-t-hi)}
+.ramp{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink2);margin-top:10px;flex-wrap:wrap}
+.ramp i{display:block;width:120px;height:8px;border-radius:4px;background:linear-gradient(to right,var(--hm-lo),var(--hm-hi))}
+#app[dir="rtl"] .ramp i{background:linear-gradient(to left,var(--hm-lo),var(--hm-hi))}
+
+/* priorities */
+.plist{display:flex;flex-direction:column}
+.pr{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;width:100%;text-align:start;background:none;border:0;border-top:1px solid var(--line);padding:12px 6px;cursor:pointer;align-items:start;border-radius:0}
+.pr:first-child{border-top:0}
+.pr:hover,.pr[aria-pressed="true"]{background:var(--chip)}
+.pr[aria-pressed="true"]{border-radius:8px}
+.rk{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:12px;font-weight:600;margin-top:1px}
+.pb{display:flex;flex-direction:column;gap:4px;min-width:0}
+.pt{display:flex;align-items:center;gap:8px;font-weight:500;flex-wrap:wrap}
+.ps{font-size:12.5px;color:var(--ink2)}
+.pc{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.pnote{margin:10px 0 0;font-size:12px;color:var(--muted)}
+
+/* definitions */
+details.card>summary{cursor:pointer;font-family:var(--f-display);font-weight:600;font-size:16px;list-style-position:inside}
+details.card[open]>summary{margin-bottom:12px}
+.dl{display:grid;grid-template-columns:minmax(120px,max-content) minmax(0,1fr);gap:8px 16px;margin:12px 0 0;font-size:13px}
+.dl dt{font-weight:600}
+.dl dd{margin:0;color:var(--ink2)}
+@media (max-width:560px){.dl{grid-template-columns:minmax(0,1fr);gap:2px}.dl dd{margin-bottom:8px}}
+
+/* tables & bars */
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:460px}
+th{font-weight:500;color:var(--ink2);font-size:12px;text-align:start;padding:6px 8px;border-bottom:1px solid var(--axis)}
+td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:13px}
+tr:last-child td{border-bottom:0}
+.best{font-size:11px;background:var(--ink);color:var(--bg);border-radius:6px;padding:1px 7px;margin-inline-start:6px;white-space:nowrap}
+.bar{height:8px;border-radius:4px;background:var(--grid);overflow:hidden;direction:ltr;min-width:80px}
+.bar i{display:block;height:100%;border-radius:0 4px 4px 0}
+.fi{display:grid;grid-template-columns:minmax(120px,1.2fr) 2fr auto;gap:10px;align-items:center;padding:5px 0;font-size:13px}
+.note{font-size:12.5px;color:var(--ink2)}
+.cut{display:flex;flex-direction:column;gap:10px}
+.cutrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+input[type=range]{flex:1;min-width:160px;accent-color:var(--ink);direction:ltr}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.m .k{display:block;font-size:12px;color:var(--ink2)}
+.m .v{font-family:var(--f-display);font-weight:600;font-size:22px;line-height:1.4}
+.m .n{display:block;font-size:11.5px;color:var(--muted)}
+.chip{font-size:11.5px;background:var(--chip);color:var(--ink2);border-radius:6px;padding:2px 8px;white-space:nowrap}
+
+/* methodology */
+.split{display:flex;height:34px;border-radius:8px;overflow:hidden;direction:ltr;gap:2px}
+.split div{display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--bg)}
+.splitl{display:flex;direction:ltr;gap:2px;font-size:11.5px;color:var(--ink2);margin-top:4px}
+.splitl div{overflow:hidden;white-space:nowrap}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:12px;font-weight:600}
+.steps b{display:block;font-weight:600}
+.steps span{font-size:12.5px;color:var(--ink2)}
+ul.plain{margin:0;padding:0;padding-inline-start:18px;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.foot{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+
+/* touch devices (tablets): larger targets and base size */
+@media (pointer:coarse){
+  .seg button{min-height:40px;padding:8px 14px}
+  .tab{min-height:46px;padding-inline:16px}
+  select{min-height:40px}
+  .nm{min-height:46px}
+  .cell{min-height:44px}
+  .pr{padding-block:14px;min-height:60px}
+  .dcard{padding:16px}
+  input[type=range]{height:34px}
+}
+@media (pointer:coarse) and (min-width:600px){body{font-size:15px}.sumtxt{font-size:16px}}
+@media (min-width:600px) and (max-width:979px){.top h1{font-size:26px}}
+@media (prefers-reduced-motion:no-preference){.dcard,.tab,.pr{transition:border-color .15s,color .15s,background .15s}}
+</style>
+</head>
+<body>
+<noscript><p style="padding:16px;font-family:system-ui,sans-serif">تحتاج هذه اللوحة إلى تفعيل JavaScript. · This dashboard needs JavaScript enabled.</p></noscript>
+<div id="app" dir="rtl" lang="ar" class="wrap">
+  <header class="top">
+    <div class="meta">
+      <h1 data-i18n="title"></h1>
+      <p data-i18n="sub"></p>
+    </div>
+    <div class="meta">
+      <div class="seg" id="langseg" role="group" aria-label="اللغة / Language">
+        <button data-act="lang" data-v="ar" lang="ar" aria-pressed="true">العربية</button>
+        <button data-act="lang" data-v="en" lang="en" aria-pressed="false">English</button>
+      </div>
+      <div class="ruler" id="ruler" aria-hidden="true"></div>
+      <div class="rl" id="rl"></div>
+    </div>
+  </header>
+
+  <div class="sim" role="note">
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2L15 14H1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v4M8 12v.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <div id="simtxt"></div>
+  </div>
+
+  <nav class="tabs" role="tablist" id="tabs">
+    <button class="tab" role="tab" data-act="tab" data-v="ov" data-i18n="tab_ov"></button>
+    <button class="tab" role="tab" data-act="tab" data-v="ev" data-i18n="tab_ev"></button>
+    <button class="tab" role="tab" data-act="tab" data-v="dm" data-i18n="tab_dm"></button>
+  </nav>
+
+  <main class="panel" id="panel"></main>
+
+  <footer class="foot" data-i18n="foot"></footer>
+</div>
+
+<script>
+/* ---------- Block 1: language helpers, synthetic data, simulation and model math (no DOM) ---------- */
+let LANG='ar';
+const L=(a,e)=>LANG==='ar'?a:e;
+const nm=o=>LANG==='ar'?o.n:o.e;
+const NH=156, HF=8, NT=NH+HF, TEST0=104, VAL0=78, K=15, NS=1200;
+const BASE=Date.UTC(2026,9,10);
+const wkDate=t=>new Date(BASE+(t-(NH-1))*7*864e5);
+const MON=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const MONE=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const mon=d=>(LANG==='ar'?MON:MONE)[d.getUTCMonth()];
+const fmtD=d=>d.getUTCDate()+' '+mon(d)+' '+d.getUTCFullYear();
+const doy=d=>Math.floor((d-Date.UTC(d.getUTCFullYear(),0,0))/864e5);
+const isoWeek=d=>{const t=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));const n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);const y0=Date.UTC(t.getUTCFullYear(),0,1);return Math.ceil(((t-y0)/864e5+1)/7)};
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const R0=rng(20261015);
+const randn=()=>{let u=0,v=0;while(!u)u=R0();v=R0();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+const pct=(arr,q)=>{const s=[...arr].sort((a,b)=>a-b);return s[Math.min(s.length-1,Math.floor(q*(s.length-1)+.5))]};
+const qt=(a,q)=>a[Math.min(a.length-1,Math.max(0,Math.round(q*(a.length-1))))];
+
+const LOC=[
+ {n:'ود مدني الكبرى',e:'Greater Wad Madani',s:.22},{n:'الحصاحيصا',e:'Al-Hasahisa',s:.12},{n:'المناقل',e:'Al-Managil',s:.16},{n:'الكاملين',e:'Al-Kamlin',s:.12},
+ {n:'أم القرى',e:'Umm Al-Qura',s:.10},{n:'جنوب الجزيرة',e:'South Al Jazirah',s:.12},{n:'شرق الجزيرة',e:'East Al Jazirah',s:.10},{n:'القرشي',e:'Al-Qurashi',s:.06}];
+const DIS=[
+ {k:'mal',n:'الملاريا',e:'Malaria',cv:'--c-mal',L:1150,pk:255,w:48,base:.22,y26:1.05,f:[.8,1.1,1.3,1.1,1,1.1,.9,1.2],sig:{base:.30,rf:.22,xgb:.19}},
+ {k:'den',n:'حمى الضنك',e:'Dengue fever',cv:'--c-den',L:260,pk:350,w:38,base:.06,y26:1.15,f:[2.2,.8,.5,.8,.7,.7,.8,.4],sig:{base:.38,rf:.36,xgb:.34}},
+ {k:'awd',n:'الإسهالات المائية الحادة',e:'Acute watery diarrhoea',cv:'--c-awd',L:520,pk:236,w:42,base:.2,y26:1.15,f:[1.2,1,1.1,.9,.9,1,.9,1],sig:{base:.33,rf:.26,xgb:.25}}
+];
+const MODELS=[{id:'base',n:'خط الأساس (انحدار ثنائي الحدين السالب مع الموسمية)',e:'Baseline (negative binomial regression with seasonality)'},{id:'rf',n:'Random Forest',e:'Random Forest'},{id:'xgb',n:'XGBoost',e:'XGBoost'}];
+const LV=[{n:'منخفض',e:'Low',c:'--good'},{n:'متوسط',e:'Medium',c:'--warn'},{n:'مرتفع',e:'High',c:'--serious'},{n:'حرج',e:'Critical',c:'--crit'}];
+const lvl=p=>p<.15?0:p<.4?1:p<.7?2:3;
+const YM={2023:.95,2024:.8,2025:1.1};
+const circ=(a,c)=>{let d=Math.abs(a-c);return Math.min(d,365-d)};
+const seas=(d,dy)=>d.base+(1-d.base)*Math.exp(-.5*Math.pow(circ(dy,d.pk)/d.w,2));
+
+const Y=[],MU=[],PM=[];
+DIS.forEach((d,di)=>{
+  Y[di]=[];MU[di]=[];PM[di]={base:[],rf:[],xgb:[]};
+  LOC.forEach((l,li)=>{
+    const y=[],mu=[];let ar=0;
+    for(let t=0;t<NT;t++){
+      const dt=wkDate(t);ar=t<NH?.75*ar+.12*randn():.75*ar;
+      const ym=dt.getUTCFullYear()===2026?d.y26:(YM[dt.getUTCFullYear()]||1);
+      const m=d.L*seas(d,doy(dt))*ym*l.s*d.f[li]*Math.exp(ar);
+      mu.push(m);
+      if(t<NH)y.push(Math.max(0,Math.round(m+Math.sqrt(m*1.5+.5)*randn())));
+    }
+    Y[di].push(y);MU[di].push(mu);
+    MODELS.forEach(M=>{const a=[];for(let t=TEST0;t<NH;t++)a[t]=mu[t]*Math.exp(d.sig[M.id]*randn());PM[di][M.id].push(a)});
+  });
+});
+const THR=DIS.map((d,di)=>LOC.map((l,li)=>Math.max(1,pct(Y[di][li].slice(0,TEST0),.85))));
+
+/* exact negative binomial tail: P(Y > k) for mean m and size K */
+function nbCdf(k,m){
+  if(m<=0)return 1;
+  const q=m/(m+K);let p=Math.pow(K/(K+m),K),c=p;
+  for(let i=0;i<k;i++){p*=(i+K)/(i+1)*q;c+=p}
+  return Math.min(1,c);
+}
+const pEx=(m,thr)=>1-nbCdf(thr,m);
+
+/* path simulation: gamma-Poisson counts with shared (state) and local AR(1) shocks that widen with horizon */
+function gammaS(k){const d=k-1/3,c=1/Math.sqrt(9*d);for(;;){let x,v;do{x=randn();v=1+c*x}while(v<=0);v=v*v*v;const u=R0();if(Math.log(u)<.5*x*x+d-d*v+d*Math.log(v))return d*v}}
+const poisS=l=>{if(l<30){const e=Math.exp(-l);let k=0,p=1;do{k++;p*=R0()}while(p>e);return k-1}return Math.max(0,Math.round(l+Math.sqrt(l)*randn()))};
+const nbS=mu=>poisS(gammaS(K)*mu/K);
+function sim(di,origin,H){
+  const loc=LOC.map(()=>Array.from({length:H},()=>new Float32Array(NS)));
+  const st=Array.from({length:H},()=>new Float32Array(NS));
+  for(let s=0;s<NS;s++){
+    let c=0;const l=new Array(LOC.length).fill(0);
+    for(let h=0;h<H;h++){
+      c=.9*c+.08*randn();let tot=0;
+      for(let i=0;i<LOC.length;i++){
+        l[i]=.9*l[i]+.06*randn();
+        const y=nbS(MU[di][i][origin+h]*Math.exp(c+l[i]));
+        loc[i][h][s]=y;tot+=y;
+      }
+      st[h][s]=tot;
+    }
+  }
+  return{loc,st};
+}
+const SIMC={};
+const getSim=(di,origin,H)=>SIMC[di+':'+origin]||(SIMC[di+':'+origin]=sim(di,origin,H));
+
+/* seasonal context: endemic channel (25-75%) and median from same weeks (+-1) of previous years, plus last year's line */
+function ctxOf(obs){
+  const lo=[],md=[],hi=[],py=[];
+  for(let t=0;t<NT;t++){
+    const v=[];
+    for(let k=1;k<=3;k++)for(let dw=-1;dw<=1;dw++){const i=t-52*k+dw;if(i>=0&&i<NH&&i<t)v.push(obs[i])}
+    if(v.length>=3){v.sort((a,b)=>a-b);lo[t]=qt(v,.25);md[t]=qt(v,.5);hi[t]=qt(v,.75)}
+    if(t-52>=0&&t-52<NH)py[t]=obs[t-52];
+  }
+  return{lo,md,hi,py};
+}
+
+const SC={};
+function scope(di,l){
+  const key=di+':'+l;if(SC[key])return SC[key];
+  const S0=getSim(di,NH,HF),smp=l<0?S0.st:S0.loc[l];
+  const idx=l<0?LOC.map((_,i)=>i):[l];
+  const obs=[];for(let t=0;t<NH;t++)obs[t]=idx.reduce((a,i)=>a+Y[di][i][t],0);
+  const thr=l<0?Math.max(1,pct(obs.slice(0,TEST0),.85)):THR[di][l];
+  const o={obs,thr,med:[],q10:[],q90:[],q25:[],q75:[],q025:[],q975:[],p:[]};
+  for(let h=0;h<HF;h++){
+    const t=NH+h,a=Float32Array.from(smp[h]).sort();
+    o.med[t]=qt(a,.5);o.q10[t]=qt(a,.1);o.q90[t]=qt(a,.9);o.q25[t]=qt(a,.25);o.q75[t]=qt(a,.75);o.q025[t]=qt(a,.025);o.q975[t]=qt(a,.975);
+    let c=0;for(let s=0;s<NS;s++)if(smp[h][s]>thr)c++;o.p[t]=c/NS;
+  }
+  let any=0;const s4=new Float32Array(NS);
+  for(let s=0;s<NS;s++){let ex=false,sum=0;for(let h=0;h<4;h++){const v=smp[h][s];sum+=v;if(v>thr)ex=true}if(ex)any++;s4[s]=sum}
+  s4.sort();
+  o.p4=any/NS;o.pmax4=Math.max(o.p[NH],o.p[NH+1],o.p[NH+2],o.p[NH+3]);o.lvl=lvl(o.p4);
+  o.sum4=qt(s4,.5);o.lo4=qt(s4,.1);o.hi4=qt(s4,.9);
+  const P0=getSim(di,NH-1,4),ps=l<0?P0.st:P0.loc[l];let a2=0;
+  for(let s=0;s<NS;s++){for(let h=0;h<4;h++){if(ps[h][s]>thr){a2++;break}}}
+  o.prevP4=a2/NS;o.prevLvl=lvl(o.prevP4);
+  o.ctx=ctxOf(obs);
+  const b=[0,1,2,3].map(h=>o.ctx.md[NH+h]);
+  o.vsUsual=b.every(v=>v!=null)?o.sum4/b.reduce((x,y)=>x+y,0)-1:null;
+  return SC[key]=o;
+}
+const RISK=DIS.map((d,di)=>({st:scope(di,-1),loc:LOC.map((_,li)=>scope(di,li))}));
+function priorities(){
+  const a=[];
+  DIS.forEach((d,di)=>LOC.forEach((l,li)=>{const r=RISK[di].loc[li];a.push({di,li,r,ratio:r.sum4/(r.thr*4)})}));
+  a.sort((x,y)=>y.r.p4-x.r.p4||y.ratio-x.ratio);
+  return a;
+}
+
+const BT={};
+DIS.forEach((d,di)=>{BT[di]={};MODELS.forEach(M=>{
+  let ae=0,se=0,n=0;const pred=[];
+  for(let t=TEST0;t<NH;t++){let P=0,A=0;LOC.forEach((l,li)=>{P+=PM[di][M.id][li][t];A+=Y[di][li][t]});pred[t]=P;ae+=Math.abs(A-P);se+=(A-P)*(A-P);n++}
+  const rows=[];
+  LOC.forEach((l,li)=>{for(let t=TEST0;t<NH;t++)rows.push({e:Y[di][li][t]>THR[di][li]?1:0,p:pEx(PM[di][M.id][li][t],THR[di][li])})});
+  BT[di][M.id]={mae:ae/n,rmse:Math.sqrt(se/n),pred,rows};
+})});
+const bestModel=di=>MODELS.reduce((b,M)=>BT[di][M.id].mae<BT[di][b.id].mae?M:b,MODELS[0]);
+function cutMetrics(di,mid,c){
+  let tp=0,fp=0,fn=0,tn=0;
+  BT[di][mid].rows.forEach(r=>{const a=r.p>=c;if(a&&r.e)tp++;else if(a)fp++;else if(r.e)fn++;else tn++});
+  return{tp,fp,fn,tn,sens:tp+fn?tp/(tp+fn):null,spec:tn+fp?tn/(tn+fp):null,ppv:tp+fp?tp/(tp+fp):null,ev:tp+fn,al:tp+fp};
+}
+/* variable importance: [Arabic, English, relative value] — illustrative only */
+const FI={
+ mal:[['الأمطار (تأخر 4 إلى 6 أسابيع)','Rainfall (4–6 week lag)',100],['الحالات المسجلة في الأسبوع السابق','Cases reported the previous week',86],['الرطوبة النسبية','Relative humidity',54],['درجة الحرارة العظمى','Maximum temperature',41],['أسبوع الموسم','Week of season',33],['الكثافة السكانية','Population density',12]],
+ den:[['الحالات المسجلة في الأسبوع السابق','Cases reported the previous week',100],['الأمطار (تأخر 3 إلى 5 أسابيع)','Rainfall (3–5 week lag)',62],['درجة الحرارة الصغرى','Minimum temperature',48],['الرطوبة النسبية','Relative humidity',44],['الكثافة السكانية (حضرية)','Population density (urban)',37],['أسبوع الموسم','Week of season',22]],
+ awd:[['الأمطار الأسبوعية','Weekly rainfall',100],['الحالات المسجلة في الأسبوع السابق','Cases reported the previous week',78],['أسبوع الموسم','Week of season',57],['درجة الحرارة العظمى','Maximum temperature',31],['مصدر المياه والإصحاح','Water source and sanitation',29],['الكثافة السكانية','Population density',18]]
+};
+</script>
+
+<script>
+/* ---------- Block 2: interface ---------- */
+const S={tab:'ov',di:0,loc:-1,range:52,model:'xgb',cut:40,ch:true,py:false};
+const $=s=>document.querySelector(s);
+const nf=n=>Math.round(n).toLocaleString('en-US');
+const iso=s=>LANG==='ar'?'⁦'+s+'⁩':s;
+const pc=p=>iso(Math.round(p*100)+'%');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mlab=M=>M.id==='base'?L('خط الأساس','Baseline'):nm(M);
+let redraws=[];
+
+/* static strings: [Arabic, English] */
+const STR={
+ title:['لوحة الإنذار المبكر للأمراض المعدية في ولاية الجزيرة','Al Jazirah State Infectious Disease Early Warning Dashboard'],
+ sub:['نموذج أولي لدعم الترصد الوبائي: توقعات أسبوعية لمخاطر الملاريا وحمى الضنك والإسهالات المائية الحادة، مع حدود عدم اليقين وتقييم الأداء.','Prototype to support epidemiological surveillance: weekly forecasts of malaria, dengue fever and acute watery diarrhoea risk, with uncertainty ranges and performance evaluation.'],
+ tab_ov:['نظرة عامة','Overview'],
+ tab_ev:['تقييم النماذج','Model evaluation'],
+ tab_dm:['البيانات والمنهجية','Data and methods'],
+ foot:['لوحة بحثية أولية ضمن مشروع ماجستير جامعة الجزيرة. ليست بديلًا عن أنظمة الترصد الرسمية أو القرار الطبي أو الوبائي، ولا يجوز نشر تنبيهات تشغيلية قبل التحقق من النموذج واعتماده من الجهات الصحية المختصة. أسماء المحليات تحتاج مطابقة مع التقسيم الإداري الرسمي المعتمد.','Preliminary research dashboard for a University of Gezira master’s project. It is not a substitute for official surveillance systems or for medical and epidemiological decisions, and no operational alerts may be published before the model is validated and approved by the competent health authorities. Locality names must be matched against the official administrative divisions.']
+};
+const SIM=['<b>نموذج أولي ببيانات محاكاة.</b> جميع الأرقام والتنبؤات والتنبيهات في هذه اللوحة مولّدة برمجيًا لتوضيح الفكرة وشكل المخرجات، وليست بيانات ترصد فعلية ولا نتائج دراسة. لا تُستخدم لأي قرار صحي.','<b>Prototype with simulated data.</b> All figures, forecasts and alerts on this dashboard are generated by code to illustrate the idea and the shape of the outputs. They are not real surveillance data or study results. Do not use them for any health decision.'];
+
+function rulerLabel(){
+  const d=wkDate(NH-1),cur=isoWeek(d),y=d.getUTCFullYear();
+  $('#rl').textContent=L('الأسبوع الوبائي '+cur+' من '+y+' · آخر أسبوع في المحاكاة ينتهي '+fmtD(d)+' · أفق التنبؤ '+HF+' أسابيع','Epidemiological week '+cur+', '+y+' · last simulated week ends '+fmtD(d)+' · '+HF+'-week forecast horizon');
+}
+function applyStatic(){
+  const i=LANG==='ar'?0:1,app=$('#app');
+  app.dir=LANG==='ar'?'rtl':'ltr';app.lang=LANG;document.documentElement.lang=LANG;
+  document.title=L('إنذار الجزيرة المبكر','Al Jazirah Early Warning');
+  document.querySelectorAll('[data-i18n]').forEach(e=>{e.textContent=STR[e.dataset.i18n][i]});
+  $('#simtxt').innerHTML=SIM[i];
+  document.querySelectorAll('#langseg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===LANG));
+  rulerLabel();
+}
+
+function icon(l){
+  const c='style="fill:var('+LV[l].c+')"';
+  const sh=[
+   '<circle cx="7" cy="7" r="6" '+c+'/><path d="M4.3 7.2l1.9 1.9 3.5-3.9" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+   '<path d="M7 1.2L13.3 12.4H.7z" '+c+'/><path d="M7 5.4v3.2M7 10.3v.1" stroke="#222" stroke-width="1.5" stroke-linecap="round"/>',
+   '<path d="M7 .6L13.4 7 7 13.4.6 7z" '+c+'/><path d="M7 3.9v3.5M7 9.3v.1" stroke="#222" stroke-width="1.5" stroke-linecap="round"/>',
+   '<path d="M4.3.8h5.4L13.2 4.3v5.4L9.7 13.2H4.3L.8 9.7V4.3z" '+c+'/><path d="M7 3.7v4M7 9.6v.1" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>'];
+  return '<svg class="ic" viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">'+sh[l]+'</svg>';
+}
+const pill=l=>'<span class="pill">'+icon(l)+nm(LV[l])+'</span>';
+const arrow=k=>'<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">'+(k==='up'?'<path d="M5 1L9.5 9H.5z" fill="currentColor"/>':k==='down'?'<path d="M5 9L.5 1h9z" fill="currentColor"/>':'<path d="M1 3.5h8M1 6.5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>')+'</svg>';
+function chg(r){
+  const d=r.lvl-r.prevLvl;
+  if(d>0)return '<span class="chg up">'+arrow('up')+L('ارتفع من «'+nm(LV[r.prevLvl])+'»','Up from “'+nm(LV[r.prevLvl])+'”')+'</span>';
+  if(d<0)return '<span class="chg down">'+arrow('down')+L('انخفض من «'+nm(LV[r.prevLvl])+'»','Down from “'+nm(LV[r.prevLvl])+'”')+'</span>';
+  return '<span class="chg">'+arrow('eq')+L('دون تغيّر عن الأسبوع الماضي','No change since last week')+'</span>';
+}
+const wow=r=>{const a=r.obs[NH-1],b=r.obs[NH-2],v=(a-b)/Math.max(1,b);return iso((v>=0?'+':'−')+Math.round(Math.abs(v)*100)+'%')};
+const vsTxt=r=>r.vsUsual==null?'':' · '+L((r.vsUsual>=0?'أعلى':'أدنى')+' من المعتاد بنحو '+iso(Math.round(Math.abs(r.vsUsual)*100)+'%'),'about '+Math.round(Math.abs(r.vsUsual)*100)+'% '+(r.vsUsual>=0?'above':'below')+' usual');
+
+/* generic line chart (LTR plot) with bands */
+function niceStep(x){const p=Math.pow(10,Math.floor(Math.log10(x)));const r=x/p;return(r<=1?1:r<=2?2:r<=2.5?2.5:r<=5?5:10)*p}
+function drawChart(host,cfg){
+  host._cfg=cfg;
+  const W=Math.max(280,host.clientWidth||320),H=W<520?250:W<900?320:340;
+  const m={l:44,r:10,t:12,b:26},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  let ymax=1;
+  const bump=v=>{if(v!=null&&v>ymax)ymax=v};
+  cfg.series.forEach(s=>{for(let t=cfg.x0;t<=cfg.x1;t++)bump(s.vals[t])});
+  if(cfg.fan)cfg.fan.forEach(f=>{for(let t=cfg.x0;t<=cfg.x1;t++)bump(f.hi[t])});
+  if(cfg.channel)for(let t=cfg.x0;t<=cfg.x1;t++)bump(cfg.channel.hi[t]);
+  if(cfg.thr)ymax=Math.max(ymax,cfg.thr.val*1.1);
+  const st=niceStep(ymax*1.05/4);ymax=Math.ceil(ymax*1.05/st)*st;
+  const X=t=>m.l+(t-cfg.x0)/(cfg.x1-cfg.x0)*iw,Y=v=>m.t+ih-v/ymax*ih;
+  const bandPath=(lo,hi,a,b)=>{
+    const ts=[];for(let t=a;t<=b;t++)if(lo[t]!=null&&hi[t]!=null)ts.push(t);
+    if(ts.length<2)return'';
+    let up='',dn='';
+    ts.forEach((t,i)=>{up+=(i?'L':'M')+X(t).toFixed(1)+','+Y(hi[t]).toFixed(1)});
+    for(let i=ts.length-1;i>=0;i--)dn+='L'+X(ts[i]).toFixed(1)+','+Y(lo[ts[i]]).toFixed(1);
+    return up+dn+'Z';
+  };
+  let g='';
+  for(let v=0;v<=ymax+1e-9;v+=st){g+='<line class="g-grid" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/><text class="g-tick" x="'+(m.l-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+nf(v)+'</text>'}
+  g+='<line class="g-axis" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+Y(0)+'" y2="'+Y(0)+'"/>';
+  const span=cfg.x1-cfg.x0,mpx=iw/(span/4.345),mstep=[1,2,3,4,6].find(s=>s*mpx>=60)||6;
+  let first=true;
+  for(let t=cfg.x0;t<=cfg.x1;t++){
+    const d=wkDate(t);
+    if(d.getUTCDate()<=7&&d.getUTCMonth()%mstep===0){
+      const x=X(t),lab=mon(d)+((d.getUTCMonth()===0||first)?' '+String(d.getUTCFullYear()).slice(2):'');
+      first=false;
+      const anc=x<m.l+20?'start':x>W-m.r-22?'end':'middle';
+      g+='<line class="g-axis" x1="'+x+'" x2="'+x+'" y1="'+Y(0)+'" y2="'+(Y(0)+4)+'"/><text class="g-tick" x="'+x+'" y="'+(H-8)+'" text-anchor="'+anc+'">'+lab+'</text>';
+    }
+  }
+  if(cfg.channel){const p=bandPath(cfg.channel.lo,cfg.channel.hi,cfg.x0,cfg.x1);if(p)g+='<path d="'+p+'" style="fill:var(--axis);opacity:.42"/>'}
+  if(cfg.fan)cfg.fan.forEach(f=>{const p=bandPath(f.lo,f.hi,cfg.split!=null?cfg.split:cfg.x0,cfg.x1);if(p)g+='<path d="'+p+'" style="fill:var('+f.color+');opacity:'+f.o+'"/>'});
+  if(cfg.split!=null){const x=X(cfg.split);g+='<line x1="'+x+'" x2="'+x+'" y1="'+m.t+'" y2="'+Y(0)+'" style="stroke:var(--axis);stroke-dasharray:2 3"/><text class="g-note" x="'+(W-m.r-x<56?W-m.r:x+5)+'" y="'+(m.t+10)+'" text-anchor="'+(W-m.r-x<56?'end':'start')+'">'+L('التنبؤ','Forecast')+'</text><text class="g-note" x="'+(x-5)+'" y="'+(m.t+10)+'" text-anchor="end">'+L('المرصود','Observed')+'</text>'}
+  if(cfg.thr){const y=Y(cfg.thr.val);g+='<line x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+y+'" y2="'+y+'" style="stroke:var(--ink2);stroke-dasharray:5 4;stroke-width:1.25"/><text class="g-note" x="'+(m.l+4)+'" y="'+(y-5)+'" text-anchor="start">'+cfg.thr.label+'</text>'}
+  cfg.series.forEach(s=>{
+    let d='',open=false;
+    for(let t=cfg.x0;t<=cfg.x1;t++){const v=s.vals[t];if(v==null){open=false;continue}d+=(open?'L':'M')+X(t).toFixed(1)+','+Y(v).toFixed(1);open=true}
+    g+='<path d="'+d+'" fill="none" style="stroke:'+s.color+';stroke-width:'+(s.w||2)+'" '+(s.dash?'stroke-dasharray="'+s.dash+'" ':'')+'stroke-linejoin="round" stroke-linecap="round"/>';
+  });
+  if(cfg.mark!=null){const s=cfg.series[0];g+='<circle cx="'+X(cfg.mark)+'" cy="'+Y(s.vals[cfg.mark])+'" r="4" style="fill:'+s.color+';stroke:var(--surface);stroke-width:2"/>'}
+  g+='<g id="hv" hidden><line id="hl" y1="'+m.t+'" y2="'+Y(0)+'" style="stroke:var(--ink2);stroke-width:1"/>'+cfg.series.map((s,i)=>'<circle class="hc" r="4.5" style="fill:'+s.color+';stroke:var(--surface);stroke-width:2"/>').join('')+'</g>';
+  g+='<rect id="hit" x="'+m.l+'" y="'+m.t+'" width="'+iw+'" height="'+ih+'" fill="transparent"/>';
+  host.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="'+esc(cfg.label)+'">'+g+'</svg><div class="tip" hidden></div>';
+  const svg=host.querySelector('svg'),hv=svg.querySelector('#hv'),hl=svg.querySelector('#hl'),cs=[...svg.querySelectorAll('.hc')],tip=host.querySelector('.tip'),hit=svg.querySelector('#hit');
+  function move(e){
+    const r=svg.getBoundingClientRect(),px=(e.clientX-r.left)*(W/r.width);
+    const t=Math.max(cfg.x0,Math.min(cfg.x1,Math.round(cfg.x0+(px-m.l)/iw*span)));
+    const x=X(t);hv.hidden=false;hl.setAttribute('x1',x);hl.setAttribute('x2',x);
+    cfg.series.forEach((s,i)=>{const v=s.vals[t];if(v==null){cs[i].setAttribute('visibility','hidden')}else{cs[i].setAttribute('visibility','visible');cs[i].setAttribute('cx',x);cs[i].setAttribute('cy',Y(v))}});
+    tip.innerHTML=cfg.tip(t);tip.hidden=false;
+    const tw=tip.offsetWidth,sc=r.width/W,left=x*sc;
+    tip.style.left=Math.max(0,Math.min(r.width-tw,left>r.width/2?left-tw-12:left+12))+'px';
+  }
+  hit.addEventListener('pointermove',move);hit.addEventListener('pointerdown',move);
+  hit.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'){hv.hidden=true;tip.hidden=true}});
+}
+function mountChart(id,cfgFn){
+  const host=document.getElementById(id);if(!host)return;
+  const go=()=>drawChart(host,cfgFn());go();redraws.push(go);
+}
+
+function spark(di){
+  const sc=scope(di,-1),d=DIS[di],t0=NH-12,t1=NT-1,W=116,H=50;
+  let mx=sc.thr;for(let t=t0;t<=t1;t++){const v=t<NH?sc.obs[t]:sc.med[t];if(v>mx)mx=v;if(t>=NH&&sc.q90[t]>mx)mx=sc.q90[t]}
+  const X=t=>4+(t-t0)/(t1-t0)*(W-8),Y=v=>H-4-v/(mx*1.05)*(H-8);
+  let o='',f='M'+X(NH-1)+','+Y(sc.obs[NH-1]),up='M'+X(NH-1)+','+Y(sc.obs[NH-1]),dn='';
+  for(let t=t0;t<NH;t++)o+=(o?'L':'M')+X(t).toFixed(1)+','+Y(sc.obs[t]).toFixed(1);
+  for(let t=NH;t<=t1;t++){f+='L'+X(t).toFixed(1)+','+Y(sc.med[t]).toFixed(1);up+='L'+X(t).toFixed(1)+','+Y(sc.q90[t]).toFixed(1)}
+  for(let t=t1;t>=NH;t--)dn+='L'+X(t).toFixed(1)+','+Y(sc.q10[t]).toFixed(1);
+  dn+='L'+X(NH-1)+','+Y(sc.obs[NH-1]);
+  const cl='var('+d.cv+')';
+  return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" aria-hidden="true" style="direction:ltr"><line x1="4" x2="'+(W-4)+'" y1="'+Y(sc.thr)+'" y2="'+Y(sc.thr)+'" style="stroke:var(--axis);stroke-dasharray:3 3"/><path d="'+up+dn+'Z" style="fill:'+cl+';opacity:.2"/><path d="'+o+'" fill="none" style="stroke:'+cl+';stroke-width:2" stroke-linejoin="round"/><path d="'+f+'" fill="none" style="stroke:'+cl+';stroke-width:2" stroke-dasharray="4 3"/><circle cx="'+X(NH-1)+'" cy="'+Y(sc.obs[NH-1])+'" r="3.5" style="fill:'+cl+';stroke:var(--surface);stroke-width:2"/></svg>';
+}
+
+/* header ruler ticks (language independent) */
+(function(){
+  const cur=isoWeek(wkDate(NH-1));let h='';
+  for(let w=1;w<=52;w++)h+='<span class="tk '+(w<cur?'past':w===cur?'now':w<=cur+HF?'fc':'')+'"></span>';
+  $('#ruler').innerHTML=h;
+})();
+
+/* ---------- definitions (shared by overview and methods) ---------- */
+function defs(open){
+  const lv=[
+   [L('أقل من '+iso('15%'),'below 15%'),L('احتمال ضعيف لتجاوز العتبة','Weak chance of exceeding the threshold'),L('متابعة روتينية','Routine monitoring')],
+   [iso('15–40%'),L('احتمال ملحوظ','Noticeable chance'),L('تعزيز المراقبة والتحقق من اكتمال الإبلاغ','Strengthen monitoring and check reporting completeness')],
+   [iso('40–70%'),L('احتمال مرجّح','Likely'),L('مراجعة بشرية خلال أسبوع وتحقق ميداني','Human review within a week and field verification')],
+   [L(iso('70%')+' فأكثر','70% or more'),L('احتمال مرتفع جدًا','Very likely'),L('مراجعة عاجلة من المختصين','Urgent review by specialists')]];
+  const rows=lv.map((r,i)=>'<tr><td>'+pill(i)+'</td><td class="tnum">'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>').join('');
+  const dl=[
+   [L('احتمال التجاوز','Exceedance probability'),L('نسبة المسارات المحاكاة (من '+nf(NS)+' مسار) التي يتجاوز فيها عدد الحالات الأسبوعي العتبة مرة واحدة على الأقل خلال الأسابيع الأربعة القادمة. وهو ليس أعلى احتمال لأسبوع واحد، الذي يُعرض منفصلًا.','Share of simulated paths (out of '+nf(NS)+') in which weekly cases exceed the threshold at least once in the next four weeks. It is not the highest single-week probability, which is shown separately.')],
+   [L('العتبة','Threshold'),L('المئين الـ85 للحالات الأسبوعية في فترة التدريب، لكل محلية وللولاية. عتبة تجريبية لا تغني عن عتبات المختصين.','85th percentile of weekly cases in the training period, for each locality and for the state. An experimental threshold, not a substitute for specialists’ thresholds.')],
+   [L('خط التنبؤ','Forecast line'),L('وسيط التوزيع التنبؤي، أي القيمة التي يتساوى احتمال تجاوزها واحتمال الوقوع دونها.','Median of the predictive distribution: the value that is equally likely to be exceeded or not reached.')],
+   [L('نطاقات 50% و80% و95%','50%, 80% and 95% ranges'),L('المناطق المظللة حول الوسيط. الأضيق أقرب إلى الوسيط، والأوسع تُظهر أسوأ الاحتمالات المعقولة وأفضلها، وتتسع مع طول الأفق.','Shaded areas around the median. Narrower bands sit closer to the median; wider ones show plausible worst and best cases and widen as the horizon grows.')],
+   [L('القناة الوبائية','Endemic channel'),L('النطاق بين المئين 25 و75 للحالات في الأسابيع المناظرة (± أسبوع) من السنوات السابقة المتاحة. تجريبية لأن المحاكاة تغطي ثلاث سنوات فقط.','Range between the 25th and 75th percentiles of cases in the corresponding weeks (±1 week) of the available previous years. Experimental, since the simulation covers only three years.')],
+   [L('المقارنة بالمعتاد','Compared with usual'),L('وسيط المتوقع لأربعة أسابيع مقابل وسيط القناة الوبائية لنفس الأسابيع.','Median expected over four weeks versus the endemic channel median for the same weeks.')],
+   [L('التغيّر عن الأسبوع الماضي','Change since last week'),L('مستوى الخطر الآن مقابل مستواه عند إجراء التنبؤ قبل أسبوع، والنسبة المئوية هي تغيّر الحالات المرصودة بين آخر أسبوعين.','Risk level now versus its level when the forecast was run a week earlier. The percentage is the change in observed cases between the last two weeks.')]
+  ].map(x=>'<dt>'+x[0]+'</dt><dd>'+x[1]+'</dd>').join('');
+  const body='<div class="tw"><table style="min-width:520px"><thead><tr><th>'+L('المستوى','Level')+'</th><th>'+L('احتمال التجاوز','Exceedance probability')+'</th><th>'+L('المعنى','Meaning')+'</th><th>'+L('استجابة مقترحة','Proposed response')+'</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="pnote">'+L('الاستجابات المقترحة للنقاش فقط، وتحتاج اعتماد المختصين.','Proposed responses are for discussion only and need specialist approval.')+'</p><dl class="dl">'+dl+'</dl>';
+  const title=L('كيف تُقرأ هذه اللوحة؟','How to read this dashboard');
+  return open?'<section class="card"><div class="chead"><div><h2>'+title+'</h2></div></div>'+body+'</section>':'<details class="card"><summary>'+title+'</summary>'+body+'</details>';
+}
+
+function summaryText(){
+  const parts=DIS.map((d,di)=>({d,r:RISK[di].st})).sort((a,b)=>b.r.p4-a.r.p4);
+  let s=L('خلال الأسابيع الأربعة القادمة: ','Over the next four weeks: ')+parts.map(x=>L(nm(x.d)+' بمستوى «'+nm(LV[x.r.lvl])+'» (احتمال '+pc(x.r.p4)+')',nm(x.d)+' at “'+nm(LV[x.r.lvl])+'” level ('+pc(x.r.p4)+' probability)')).join(L('، ','; '))+'.';
+  const pr=priorities().filter(x=>x.r.p4>=.15)[0];
+  if(pr)s+=L(' أعلى أولوية الآن: '+nm(DIS[pr.di])+' في '+nm(LOC[pr.li])+' (احتمال '+pc(pr.r.p4)+').',' Highest priority now: '+nm(DIS[pr.di])+' in '+nm(LOC[pr.li])+' ('+pc(pr.r.p4)+' probability).');
+  const ch=parts.filter(x=>x.r.lvl!==x.r.prevLvl);
+  s+=ch.length
+    ?L(' التغيّر عن الأسبوع الماضي: '+ch.map(x=>(x.r.lvl>x.r.prevLvl?'ارتفع':'انخفض')+' مستوى '+nm(x.d)+' من «'+nm(LV[x.r.prevLvl])+'» إلى «'+nm(LV[x.r.lvl])+'»').join('، ')+'.',' Change since last week: '+ch.map(x=>'the level of '+nm(x.d)+' '+(x.r.lvl>x.r.prevLvl?'rose':'fell')+' from “'+nm(LV[x.r.prevLvl])+'” to “'+nm(LV[x.r.lvl])+'”').join('; ')+'.')
+    :L(' لا تغيّر في مستويات الأمراض عن الأسبوع الماضي.',' No change in disease levels since last week.');
+  return s;
+}
+
+/* ---------- overview ---------- */
+function overview(){
+  const di=S.di,d=DIS[di],sc=scope(di,S.loc),lname=S.loc<0?L('الولاية كاملة','Whole state'):nm(LOC[S.loc]);
+  const oth=LANG==='ar'?'en':'ar',othName=o=>LANG==='ar'?o.e:o.n;
+  const asof=fmtD(wkDate(NH-1));
+  const ranges=[L('أقل من '+iso('15%'),'below 15%'),iso('15–40%'),iso('40–70%'),L(iso('70%')+' فأكثر','70% or more')];
+  const lvlRow=[0,1,2,3].map(i=>'<span class="it">'+pill(i)+'<span class="tnum">'+ranges[i]+'</span></span>').join('');
+  const summary='<section class="card sumcard"><div><h2>'+L('ملخص الحالة','Situation summary')+'</h2><p class="asof">'+L('للأسابيع الأربعة القادمة · آخر أسبوع في البيانات ينتهي '+asof,'Next 4 weeks · last data week ends '+asof)+'</p></div><p class="sumtxt">'+summaryText()+'</p><div class="lvlrow"><span>'+L('المستويات بحسب احتمال تجاوز العتبة مرة على الأقل خلال 4 أسابيع:','Levels by probability of exceeding the threshold at least once within 4 weeks:')+'</span>'+lvlRow+'</div></section>';
+  const strip=DIS.map((x,i)=>{const r=RISK[i].st;return '<button class="dcard" data-act="dis" data-v="'+i+'" aria-pressed="'+(i===di)+'"><div class="dinner"><div class="dstack"><div class="dn"><span class="dot" style="background:var('+x.cv+')"></span><span>'+nm(x)+' <span class="den" lang="'+oth+'">'+othName(x)+'</span></span></div><div class="dlv">'+pill(r.lvl)+chg(r)+'</div><div class="dcap tnum">'+L('احتمال تجاوز العتبة مرة على الأقل خلال 4 أسابيع: ','Probability of exceeding the threshold at least once within 4 weeks: ')+pc(r.p4)+'</div><div class="dcap tnum">'+L('الحالات المرصودة الأسبوع الماضي: ','Observed cases last week: ')+nf(r.obs[NH-1])+' ('+wow(r)+')</div></div>'+spark(i)+'</div></button>'}).join('');
+  const stat4=S.loc<0
+    ?'<div class="stat"><span class="k">'+L('محليات بمستوى مرتفع أو حرج','Localities at high or critical level')+'</span><span class="v tnum">'+L(RISK[di].loc.filter(r=>r.lvl>=2).length+' من '+LOC.length,RISK[di].loc.filter(r=>r.lvl>=2).length+' of '+LOC.length)+'</span></div>'
+    :'<div class="stat"><span class="k">'+L('آخر أسبوع مرصود','Last observed week')+'</span><span class="v tnum">'+nf(sc.obs[NH-1])+L(' حالة',' cases')+'</span><span class="n tnum">'+wow(sc)+' '+L('عن الأسبوع السابق','vs previous week')+'</span></div>';
+  const opts='<option value="-1"'+(S.loc<0?' selected':'')+'>'+L('الولاية كاملة','Whole state')+'</option>'+LOC.map((l,i)=>'<option value="'+i+'"'+(S.loc===i?' selected':'')+'>'+nm(l)+'</option>').join('');
+  const order=LOC.map((_,i)=>i).sort((a,b)=>RISK[di].loc[b].p4-RISK[di].loc[a].p4);
+  let hh='<div class="hh first">'+L('المحلية','Locality')+'</div>';
+  for(let t=NH;t<NT;t++){const dd=wkDate(t);hh+='<div class="hh tnum">'+dd.getUTCDate()+'/'+(dd.getUTCMonth()+1)+'</div>'}
+  const rows=order.map(i=>{const r=RISK[di].loc[i];let c='';for(let t=NH;t<NT;t++){const p=r.p[t];c+='<div class="cell tnum'+(p>.5?' hi':'')+'" style="--p:'+p.toFixed(3)+'" title="'+esc(nm(LOC[i])+' · '+L('أسبوع ينتهي ','week ending ')+fmtD(wkDate(t))+' · '+L('احتمال التجاوز ','exceedance probability ')+pc(p))+'">'+Math.round(p*100)+'</div>'}
+    return '<button class="nm" data-act="loc" data-v="'+i+'" aria-pressed="'+(S.loc===i)+'"><span class="a">'+nm(LOC[i])+'</span><span class="b">'+icon(r.lvl)+nm(LV[r.lvl])+'</span></button>'+c}).join('');
+  const pr=priorities().filter(x=>x.r.p4>=.15).slice(0,5);
+  const prh=pr.length?'<div class="plist">'+pr.map((x,i)=>'<button class="pr" data-act="prio" data-d="'+x.di+'" data-l="'+x.li+'" aria-pressed="'+(S.di===x.di&&S.loc===x.li)+'"><span class="rk tnum">'+(i+1)+'</span><span class="pb"><span class="pt"><span class="dot" style="background:var('+DIS[x.di].cv+')"></span>'+nm(DIS[x.di])+' · '+nm(LOC[x.li])+'</span><span class="ps tnum">'+L('احتمال التجاوز ','Exceedance probability ')+pc(x.r.p4)+' · '+L('المتوقع نحو '+nf(x.r.sum4)+' حالة خلال 4 أسابيع (80%: '+nf(x.r.lo4)+' إلى '+nf(x.r.hi4)+')','about '+nf(x.r.sum4)+' cases expected over 4 weeks (80%: '+nf(x.r.lo4)+' to '+nf(x.r.hi4)+')')+vsTxt(x.r)+'</span><span class="pc">'+pill(x.r.lvl)+chg(x.r)+'</span></span></button>').join('')+'</div>':'<div class="note">'+L('لا توجد حالات بمستوى متوسط فأعلى.','No case is at medium level or above.')+'</div>';
+  const vs=sc.vsUsual==null?'—':iso((sc.vsUsual>=0?'+':'−')+Math.round(Math.abs(sc.vsUsual)*100)+'%');
+  const bandsLeg='<span class="bands"><i style="background:var('+d.cv+');opacity:.1"></i><i style="background:var('+d.cv+');opacity:.18"></i><i style="background:var('+d.cv+');opacity:.3"></i></span>';
+  return summary+'<section class="strip" aria-label="'+L('ملخص الأمراض','Disease summary')+'">'+strip+'</section>'+
+  '<div class="ovgrid">'+
+  '<section class="card ov-prio"><div class="chead"><div><h2>'+L('الأولويات','Priorities')+'</h2><p class="sub">'+L('أعلى خمس حالات (مرض × محلية) بحسب احتمال التجاوز ثم الحجم المتوقع. اضغط أي بند لعرضه في الرسم.','Top five cases (disease × locality) ranked by exceedance probability, then expected size. Select an item to show it in the chart.')+'</p></div></div>'+prh+'<p class="pnote">'+L('التنبيهات تجريبية وتحتاج مراجعة بشرية واعتماد العتبات من المختصين قبل أي استخدام تشغيلي.','Alerts are experimental and need human review and approval of the thresholds by specialists before any operational use.')+'</p></section>'+
+  '<section class="card ov-chart"><div class="chead"><div><h2>'+L('المرصود والتنبؤ الأسبوعي: ','Observed and weekly forecast: ')+nm(d)+'</h2><p class="sub">'+lname+' · '+L('تنبؤ تجريبي من محاكاة '+nf(NS)+' مسار','Experimental forecast from '+nf(NS)+' simulated paths')+'</p></div><div class="ctl"><label for="loc" class="note">'+L('المحلية','Locality')+'</label><select id="loc">'+opts+'</select><div class="seg" role="group" aria-label="'+L('المدى الزمني','Time range')+'">'+[[26,L('6 أشهر','6 months')],[52,L('سنة','1 year')],[156,L('3 سنوات','3 years')]].map(r=>'<button data-act="range" data-v="'+r[0]+'" aria-pressed="'+(S.range===r[0])+'">'+r[1]+'</button>').join('')+'</div><div class="seg" role="group" aria-label="'+L('سياق موسمي','Seasonal context')+'"><button data-act="ctx" data-v="ch" aria-pressed="'+S.ch+'">'+L('القناة الوبائية','Endemic channel')+'</button><button data-act="ctx" data-v="py" aria-pressed="'+S.py+'">'+L('العام السابق','Last year')+'</button></div></div></div>'+
+  '<div class="stats"><div class="stat"><span class="k">'+L('مستوى الخطر (4 أسابيع)','Risk level (4 weeks)')+'</span><span class="v">'+pill(sc.lvl)+'</span><span class="n">'+chg(sc)+'</span></div><div class="stat"><span class="k">'+L('احتمال التجاوز مرة على الأقل','Probability of at least one exceedance')+'</span><span class="v tnum">'+pc(sc.p4)+'</span><span class="n tnum">'+L('أعلى احتمال لأسبوع واحد: ','Highest single-week probability: ')+pc(sc.pmax4)+'</span></div><div class="stat"><span class="k">'+L('الحالات المتوقعة (4 أسابيع)','Expected cases (4 weeks)')+'</span><span class="v tnum">'+nf(sc.sum4)+'</span><span class="n tnum">'+L('نطاق 80%: '+nf(sc.lo4)+' إلى '+nf(sc.hi4),'80% range: '+nf(sc.lo4)+' to '+nf(sc.hi4))+'</span></div><div class="stat"><span class="k">'+L('مقارنة بالمعتاد','Compared with usual')+'</span><span class="v tnum">'+vs+'</span><span class="n">'+L('وسيط القناة الوبائية لنفس الأسابيع','Endemic channel median, same weeks')+'</span></div>'+stat4+'</div>'+
+  '<div class="legend"><span><i class="sw" style="border-color:var('+d.cv+')"></i>'+L('المرصود','Observed')+'</span><span><i class="sw d" style="border-color:var('+d.cv+')"></i>'+L('التنبؤ (الوسيط)','Forecast (median)')+'</span><span>'+bandsLeg+L('نطاقات 50% و80% و95%','50%, 80% and 95% ranges')+'</span><span><i class="sw d" style="border-color:var(--ink2)"></i>'+L('العتبة','Threshold')+'</span>'+(S.ch?'<span><i class="chn"></i>'+L('القناة الوبائية (25–75%)','Endemic channel (25–75%)')+'</span>':'')+(S.py?'<span><i class="sw dd" style="border-color:var(--muted)"></i>'+L('العام السابق','Last year')+'</span>':'')+'</div><div class="chart" id="ch1"></div></section>'+
+  '<section class="card ov-heat"><div class="chead"><div><h2>'+L('خريطة المخاطر الأسبوعية بحسب المحلية','Weekly risk heatmap by locality')+'</h2><p class="sub">'+L('احتمال تجاوز العتبة الوبائية لكل أسبوع قادم، مرتبة من الأعلى خطرًا. اضغط اسم المحلية لعرضها في الرسم.','Probability of exceeding the epidemic threshold in each coming week, sorted from highest risk. Select a locality name to show it in the chart.')+'</p></div></div><div class="hwrap"><div class="ht">'+hh+rows+'</div></div><div class="ramp"><span>0%</span><i></i><span>100%</span><span>'+L('· الأرقام داخل الخانات نسب مئوية، والتواريخ نهايات الأسابيع','· Cell values are percentages; dates are week-ending dates')+'</span></div></section>'+
+  '<div class="ov-defs">'+defs(false)+'</div></div>';
+}
+function mountOverview(){
+  const di=S.di,d=DIS[di];
+  mountChart('ch1',()=>{
+    const sc=scope(di,S.loc),cx=sc.ctx,obs=[],fc=[];
+    for(let t=0;t<NH;t++)obs[t]=sc.obs[t];
+    fc[NH-1]=sc.obs[NH-1];for(let t=NH;t<NT;t++)fc[t]=sc.med[t];
+    const fan=[['q025','q975',.10],['q10','q90',.18],['q25','q75',.30]].map(k=>{
+      const lo=[],hi=[];lo[NH-1]=hi[NH-1]=sc.obs[NH-1];
+      for(let t=NH;t<NT;t++){lo[t]=sc[k[0]][t];hi[t]=sc[k[1]][t]}
+      return{lo,hi,color:d.cv,o:k[2]};
+    });
+    const series=[{vals:obs,color:'var('+d.cv+')',w:2},{vals:fc,color:'var('+d.cv+')',w:2,dash:'5 4'}];
+    if(S.py)series.push({vals:cx.py,color:'var(--muted)',w:1.25,dash:'2 3'});
+    return{x0:NH-S.range,x1:NT-1,label:L('الحالات الأسبوعية ','Weekly cases ')+nm(d),
+      series,fan,channel:S.ch?{lo:cx.lo,hi:cx.hi}:null,thr:{val:sc.thr,label:L('العتبة ','Threshold ')+nf(sc.thr)},split:NH-1,mark:NH-1,
+      tip:t=>{const dd=wkDate(t);let h='<b>'+L('أسبوع ينتهي ','Week ending ')+fmtD(dd)+'</b>';
+        if(t<NH)h+='<div class="row"><span>'+L('المرصود','Observed')+'</span><b class="tnum">'+nf(sc.obs[t])+'</b></div>';
+        else h+='<div class="row"><span>'+L('التنبؤ (الوسيط)','Forecast (median)')+'</span><b class="tnum">'+nf(sc.med[t])+'</b></div><div class="row"><span>'+L('نطاق 80%','80% range')+'</span><span class="tnum">'+nf(sc.q10[t])+' – '+nf(sc.q90[t])+'</span></div><div class="row"><span>'+L('نطاق 95%','95% range')+'</span><span class="tnum">'+nf(sc.q025[t])+' – '+nf(sc.q975[t])+'</span></div><div class="row"><span>'+L('احتمال التجاوز','Exceedance probability')+'</span><b class="tnum">'+pc(sc.p[t])+'</b></div>';
+        if(cx.lo[t]!=null)h+='<div class="row"><span>'+L('المعتاد (25–75%)','Usual (25–75%)')+'</span><span class="tnum">'+nf(cx.lo[t])+' – '+nf(cx.hi[t])+'</span></div>';
+        if(S.py&&cx.py[t]!=null)h+='<div class="row"><span>'+L('العام السابق','Last year')+'</span><span class="tnum">'+nf(cx.py[t])+'</span></div>';
+        return h+'<div class="row"><span>'+L('العتبة','Threshold')+'</span><span class="tnum">'+nf(sc.thr)+'</span></div>'}};
+  });
+}
+
+/* ---------- evaluation ---------- */
+function evaluation(){
+  const di=S.di,d=DIS[di],best=bestModel(di),b0=BT[di].base;
+  const maxMae=Math.max(...MODELS.map(M=>BT[di][M.id].mae));
+  const trs=MODELS.map(M=>{const r=BT[di][M.id];return '<tr><td>'+nm(M)+(M.id===best.id?'<span class="best">'+L('الأقل خطأ','Lowest error')+'</span>':'')+'</td><td class="tnum">'+r.mae.toFixed(1)+'</td><td class="tnum">'+r.rmse.toFixed(1)+'</td><td><div class="bar"><i style="width:'+(r.mae/maxMae*100)+'%;background:var('+d.cv+')"></i></div></td></tr>'}).join('');
+  const gain=(b0.mae-BT[di][best.id].mae)/b0.mae;
+  const verdict=best.id==='base'
+    ?L('لم يتفوق أي نموذج معقد على خط الأساس في هذه المحاكاة، وهذه نتيجة مقبولة علميًا ويجب الإبلاغ عنها.','No complex model beat the baseline in this simulation. This is a scientifically acceptable result and must be reported.')
+    :gain<.1
+    ?L('التحسن على خط الأساس محدود ('+pc(gain)+' في MAE)، ويحتاج تبريرًا قبل اعتماد نموذج أعقد.','The improvement over the baseline is limited ('+pc(gain)+' in MAE) and needs justification before a more complex model is adopted.')
+    :L('خفّض '+nm(best)+' متوسط الخطأ المطلق بنحو '+pc(gain)+' مقارنة بخط الأساس.',nm(best)+' reduced the mean absolute error by about '+pc(gain)+' compared with the baseline.');
+  const dseg='<div class="seg" role="group" aria-label="'+L('المرض','Disease')+'">'+DIS.map((x,i)=>'<button data-act="dis" data-v="'+i+'" aria-pressed="'+(i===di)+'">'+nm(x)+'</button>').join('')+'</div>';
+  const mseg='<div class="seg" role="group" aria-label="'+L('النموذج','Model')+'">'+MODELS.map(M=>'<button data-act="model" data-v="'+M.id+'" aria-pressed="'+(S.model===M.id)+'">'+mlab(M)+'</button>').join('')+'</div>';
+  const fi=FI[d.k].map(r=>'<div class="fi"><span>'+L(r[0],r[1])+'</span><div class="bar"><i style="width:'+r[2]+'%;background:var('+d.cv+')"></i></div><span class="tnum">'+r[2]+'</span></div>').join('');
+  return '<div class="ctl">'+dseg+'</div>'+
+  '<div class="two"><section class="card"><div class="chead"><div><h2>'+L('مقارنة النماذج على فترة الاختبار','Model comparison on the test period')+'</h2><p class="sub">'+nm(d)+' · '+L('أسبوعيًا على مستوى الولاية · '+(NH-TEST0)+' أسبوعًا مستبعدة من التدريب','weekly, state level · '+(NH-TEST0)+' weeks held out from training')+'</p></div></div><div class="tw"><table><thead><tr><th>'+L('النموذج','Model')+'</th><th>MAE</th><th>RMSE</th><th>'+L('الخطأ نسبيًا','Relative error')+'</th></tr></thead><tbody>'+trs+'</tbody></table></div><p class="note" style="margin:10px 0 0">'+verdict+'</p></section>'+
+  '<section class="card"><div class="chead"><div><h2>'+L('أهمية المتغيرات','Variable importance')+'</h2><p class="sub">'+L('قيم توضيحية لشكل مخرجات التفسير، وليست من نموذج مدرّب فعليًا.','Illustrative values showing the form of interpretability output. They do not come from an actually trained model.')+'</p></div></div>'+fi+'</section></div>'+
+  '<section class="card"><div class="chead"><div><h2>'+L('المرصود مقابل المتنبأ به أسبوعيًا (فترة الاختبار)','Observed vs predicted weekly cases (test period)')+'</h2><p class="sub">'+nm(d)+' · '+L('الولاية كاملة','whole state')+'</p></div></div><div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>'+L('المرصود','Observed')+'</span><span><i class="sw" style="border-color:var('+d.cv+')"></i>'+mlab(best)+'</span><span><i class="sw d" style="border-color:var(--muted)"></i>'+L('خط الأساس','Baseline')+'</span></div><div class="chart" id="ch2"></div></section>'+
+  '<section class="card cut"><div class="chead"><div><h2>'+L('جودة الإنذار عند عتبة احتمال معيّنة','Alert quality at a chosen probability cut-off')+'</h2><p class="sub">'+L('الحدث: تجاوز أسبوع ما للعتبة الوبائية في محلية ما. الاختبار على '+(LOC.length*(NH-TEST0))+' حالة محلية-أسبوع، والعتبة من فترة التدريب فقط.','Event: a given week exceeding the epidemic threshold in a given locality. Tested on '+(LOC.length*(NH-TEST0))+' locality-weeks; the threshold comes from the training period only.')+'</p></div>'+mseg+'</div><div class="cutrow"><label for="cut" class="note">'+L('عتبة الاحتمال لإصدار التنبيه','Probability cut-off for issuing an alert')+'</label><input id="cut" type="range" min="5" max="95" step="5" value="'+S.cut+'"><b class="tnum" id="cutv">'+S.cut+'%</b></div><div id="cutres"></div></section>';
+}
+function cutHtml(){
+  const m=cutMetrics(S.di,S.model,S.cut/100),f=v=>v==null?'—':pc(v);
+  return '<div class="mgrid"><div class="m"><span class="k">'+L('الحساسية','Sensitivity')+'</span><span class="v tnum">'+f(m.sens)+'</span><span class="n tnum">'+L('اكتُشف '+m.tp+' من '+m.ev+' حدثًا','Detected '+m.tp+' of '+m.ev+' events')+'</span></div><div class="m"><span class="k">'+L('القيمة التنبؤية الإيجابية','Positive predictive value')+'</span><span class="v tnum">'+f(m.ppv)+'</span><span class="n tnum">'+L(m.tp+' من '+m.al+' تنبيهًا صحيح',m.tp+' of '+m.al+' alerts were correct')+'</span></div><div class="m"><span class="k">'+L('النوعية','Specificity')+'</span><span class="v tnum">'+f(m.spec)+'</span><span class="n">'+L('الأسابيع الهادئة دون تنبيه','Quiet weeks without an alert')+'</span></div><div class="m"><span class="k">'+L('إنذارات كاذبة','False alarms')+'</span><span class="v tnum">'+m.fp+'</span><span class="n tnum">'+L('أحداث فائتة: ','Missed events: ')+m.fn+'</span></div></div><p class="note" style="margin:12px 0 0">'+L('خفض العتبة يرفع الحساسية ويزيد الإنذارات الكاذبة. اختيار النقطة المناسبة قرار مشترك مع المختصين في الترصد وفق طاقة الاستجابة.','Lowering the cut-off raises sensitivity and increases false alarms. Choosing the right point is a joint decision with surveillance specialists, based on response capacity.')+'</p>';
+}
+function mountEval(){
+  const di=S.di,d=DIS[di],best=bestModel(di);
+  mountChart('ch2',()=>{
+    const obs=[],bp=[],ba=[];
+    for(let t=TEST0;t<NH;t++){obs[t]=scope(di,-1).obs[t];bp[t]=BT[di][best.id].pred[t];ba[t]=BT[di].base.pred[t]}
+    return{x0:TEST0,x1:NH-1,label:L('المرصود والمتنبأ به','Observed and predicted'),
+      series:[{vals:obs,color:'var(--ink)',w:1.75},{vals:bp,color:'var('+d.cv+')',w:2},{vals:ba,color:'var(--muted)',w:1.5,dash:'4 3'}],
+      tip:t=>'<b>'+L('أسبوع ينتهي ','Week ending ')+fmtD(wkDate(t))+'</b><div class="row"><span>'+L('المرصود','Observed')+'</span><b class="tnum">'+nf(obs[t])+'</b></div><div class="row"><span>'+mlab(best)+'</span><span class="tnum">'+nf(bp[t])+'</span></div><div class="row"><span>'+L('خط الأساس','Baseline')+'</span><span class="tnum">'+nf(ba[t])+'</span></div>'};
+  });
+  $('#cutres').innerHTML=cutHtml();
+}
+
+/* ---------- data & method ---------- */
+function method(){
+  const rg=(a,b)=>mon(wkDate(a))+' '+wkDate(a).getUTCFullYear()+' – '+mon(wkDate(b))+' '+wkDate(b).getUTCFullYear();
+  const src=[
+   [['وزارة الصحة الاتحادية ووزارة الصحة بولاية الجزيرة (إدارة الترصد)','حالات أسبوعية مشتبه بها ومؤكدة ومبلّغ عنها، بحسب المحلية أو المرفق','أسبوعي × محلية/مرفق','احتمال نقص الإبلاغ أو انقطاعه في فترات عدم الاستقرار'],['Federal Ministry of Health and Al Jazirah State Ministry of Health (surveillance directorate)','Weekly suspected, confirmed and reported cases, by locality or facility','Weekly × locality/facility','Possible under-reporting or interruption during unstable periods']],
+   [['الهيئة العامة للأرصاد الجوية','الأمطار ودرجة الحرارة والرطوبة','يومي × محطة','قلة المحطات وفجوات القياس'],['Sudan Meteorological Authority','Rainfall, temperature and humidity','Daily × station','Few stations and measurement gaps']],
+   [['مصادر دولية مفتوحة (CHIRPS للأمطار، ERA5 للحرارة والرطوبة، MODIS للغطاء النباتي)','متغيرات مناخية وبيئية شبكية','شبكي، يومي إلى أسبوعي','يلزم التحقق من ملاءمتها للنطاق المحلي'],['Open international sources (CHIRPS for rainfall, ERA5 for temperature and humidity, MODIS for vegetation cover)','Gridded climate and environmental variables','Gridded, daily to weekly','Suitability for the local scale must be verified']],
+   [['الجهاز المركزي للإحصاء ومصادر سكانية مفتوحة','أعداد السكان والكثافة بحسب المحلية','سنوي','الأرقام قد لا تعكس النزوح والتغير السكاني'],['Central Bureau of Statistics and open population sources','Population counts and density by locality','Annual','Figures may not reflect displacement and population change']],
+   [['جهات المياه والإصحاح البيئي','مصادر المياه وتغطية الإصحاح','يختلف','متوفرة جزئيًا إن وُجدت'],['Water and environmental sanitation authorities','Water sources and sanitation coverage','Varies','Partially available, if at all']]];
+  const i=LANG==='ar'?0:1;
+  const srow=src.map(r=>{const c=r[i];return '<tr><td>'+c[0]+'</td><td>'+c[1]+'</td><td>'+c[2]+'</td><td>'+c[3]+'</td><td><span class="chip">'+L('لم يُحصل عليها بعد','Not yet obtained')+'</span></td></tr>'}).join('');
+  const steps=[
+   [['استيراد البيانات وفحص جودتها','اكتمال السجلات، التكرار، والقيم الشاذة وتغيرات نظام الإبلاغ.'],['Import data and check its quality','Record completeness, duplicates, outliers and changes in the reporting system.']],
+   [['هندسة المتغيرات','تأخيرات زمنية للأمطار والحرارة والحالات السابقة، دون استخدام أي بيانات لم تكن متاحة وقت التنبؤ.'],['Feature engineering','Time lags for rainfall, temperature and previous cases, without using any data that was not available at forecast time.']],
+   [['بناء النماذج لكل مرض','خط أساس إحصائي ثم Random Forest وXGBoost، بنموذج مستقل لكل مرض.'],['Build a model per disease','A statistical baseline, then Random Forest and XGBoost, with a separate model for each disease.']],
+   [['التقييم بتقسيم زمني','تدريب ثم تحقق ثم اختبار بترتيب زمني، وليس بتقسيم عشوائي.'],['Evaluate with a temporal split','Training, then validation, then testing in time order, not a random split.']],
+   [['العرض وعدم اليقين','لوحة تعرض التنبؤ ونطاقاته والعتبة والقيود وتاريخ التحديث.'],['Display and uncertainty','A dashboard showing the forecast, its ranges, the threshold, the limitations and the update date.']],
+   [['التنبيه بإشراف بشري','عتبات يعتمدها المختصون، ومراجعة بشرية قبل أي إجراء.'],['Alerting with human oversight','Thresholds approved by specialists, and human review before any action.']]
+  ].map(s=>'<li><div><b>'+s[i][0]+'</b><span>'+s[i][1]+'</span></div></li>').join('');
+  const w=[VAL0,TEST0-VAL0,NH-TEST0];
+  const eth=[['الحصول على موافقات الجامعة والجهات الصحية واللجان الأخلاقية قبل الوصول إلى أي سجلات.','Obtain approvals from the university, health authorities and ethics committees before accessing any records.'],['استخدام بيانات مجمّعة دون معرّفات شخصية وبالحد الأدنى اللازم.','Use aggregated data without personal identifiers and only the minimum necessary.'],['الإفصاح عن تحيز نقص الإبلاغ وتفاوت الخدمات الصحية بين المحليات.','Disclose under-reporting bias and unequal health services between localities.'],['عدم اتخاذ قرارات آلية عالية المخاطر دون إشراف بشري.','Take no high-risk automated decisions without human oversight.']].map(x=>'<li>'+x[i]+'</li>').join('');
+  const lim=[['الأرقام الحالية محاكاة، ولا تدل على أداء النموذج على بيانات الجزيرة الفعلية.','The current figures are simulated and say nothing about model performance on real Al Jazirah data.'],['المقاييس تُحسب مبدئيًا على الولاية والمحلية الأسبوعية، وتُراجع عند معرفة دقة السجلات الفعلية.','Metrics are computed at state and weekly locality level for now, and will be revisited once the resolution of the actual records is known.'],['عدم اليقين يُحسب بمحاكاة '+nf(NS)+' مسار من توزيع ثنائي الحدين السالب مع صدمات مرتبطة زمنيًا ومكانيًا. معاملات التشتت افتراضية ويجب تقديرها من بيانات حقيقية.','Uncertainty is computed by simulating '+nf(NS)+' paths from a negative binomial distribution with temporally and spatially correlated shocks. The dispersion parameters are assumptions and must be estimated from real data.'],['العتبة (المئين 85) والقناة الوبائية تجريبيتان وتحتاجان اعتماد المختصين.','The threshold (85th percentile) and the endemic channel are experimental and need specialist approval.'],['أسماء المحليات تحتاج مطابقة مع التقسيم الإداري المعتمد.','Locality names need to be matched with the official administrative divisions.']].map(x=>'<li>'+x[i]+'</li>').join('');
+  return '<section class="card"><div class="chead"><div><h2>'+L('التقسيم الزمني للبيانات','Temporal data split')+'</h2><p class="sub">'+L('يمنع تسرب المعلومات من المستقبل إلى التدريب. الفترات هنا للمحاكاة، وتُحدَّد في الدراسة وفق السجلات المتاحة فعليًا.','Prevents information from the future leaking into training. The periods here are simulated; in the study they are set according to the records actually available.')+'</p></div></div><div class="split"><div style="flex:'+w[0]+';background:var(--ink2)">'+L('تدريب','Training')+'</div><div style="flex:'+w[1]+';background:var(--muted)">'+L('تحقق','Validation')+'</div><div style="flex:'+w[2]+';background:var(--ink)">'+L('اختبار','Testing')+'</div></div><div class="splitl"><div style="flex:'+w[0]+'">'+rg(0,VAL0-1)+'</div><div style="flex:'+w[1]+'">'+rg(VAL0,TEST0-1)+'</div><div style="flex:'+w[2]+'">'+rg(TEST0,NH-1)+'</div></div></section>'+
+  defs(true)+
+  '<section class="card"><div class="chead"><div><h2>'+L('مسار النظام المقترح','Proposed system pipeline')+'</h2></div></div><ol class="steps">'+steps+'</ol></section>'+
+  '<section class="card"><div class="chead"><div><h2>'+L('مصادر البيانات المطلوبة','Required data sources')+'</h2><p class="sub">'+L('لم يُحصل على أي من هذه المصادر بعد. حالة كل مصدر تُحدَّث عند تأكيد الوصول إليه رسميًا.','None of these sources has been obtained yet. Each source’s status will be updated once access is officially confirmed.')+'</p></div></div><div class="tw"><table style="min-width:720px"><thead><tr><th>'+L('المصدر','Source')+'</th><th>'+L('المتغيرات','Variables')+'</th><th>'+L('الدقة','Resolution')+'</th><th>'+L('مخاطر التحيز أو النقص','Bias or gap risks')+'</th><th>'+L('الحالة','Status')+'</th></tr></thead><tbody>'+srow+'</tbody></table></div></section>'+
+  '<div class="two"><section class="card"><div class="chead"><div><h2>'+L('الاعتبارات الأخلاقية','Ethical considerations')+'</h2></div></div><ul class="plain">'+eth+'</ul></section>'+
+  '<section class="card"><div class="chead"><div><h2>'+L('حدود هذا النموذج الأولي','Limits of this prototype')+'</h2></div></div><ul class="plain">'+lim+'</ul></section></div>';
+}
+
+/* ---------- render / events ---------- */
+function render(){
+  redraws=[];
+  document.querySelectorAll('#tabs .tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===S.tab));
+  const p=$('#panel');
+  p.innerHTML=S.tab==='ov'?overview():S.tab==='ev'?evaluation():method();
+  if(S.tab==='ov')mountOverview();else if(S.tab==='ev')mountEval();
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act,v=b.dataset.v;
+  if(a==='tab')S.tab=v;
+  else if(a==='lang'){LANG=v;try{localStorage.setItem('ews-lang',v)}catch(x){}applyStatic()}
+  else if(a==='dis'){S.di=+v;S.loc=-1}
+  else if(a==='range')S.range=+v;
+  else if(a==='ctx')S[v]=!S[v];
+  else if(a==='loc'){S.loc=S.loc===+v?-1:+v}
+  else if(a==='prio'){S.di=+b.dataset.d;S.loc=+b.dataset.l}
+  else if(a==='model')S.model=v;
+  render();
+  if(a==='loc'||a==='prio'){const c=$('#ch1');if(c)c.scrollIntoView({block:'nearest',behavior:'smooth'})}
+});
+document.addEventListener('change',e=>{if(e.target.id==='loc'){S.loc=+e.target.value;render()}});
+document.addEventListener('input',e=>{if(e.target.id==='cut'){S.cut=+e.target.value;$('#cutv').textContent=S.cut+'%';$('#cutres').innerHTML=cutHtml()}});
+let rz;
+new ResizeObserver(()=>{cancelAnimationFrame(rz);rz=requestAnimationFrame(()=>redraws.forEach(f=>f()))}).observe($('#app'));
+try{const v=localStorage.getItem('ews-lang');if(v==='ar'||v==='en')LANG=v}catch(x){}
+applyStatic();
+render();
+</script>
+</body>
+</html>
